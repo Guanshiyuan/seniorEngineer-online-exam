@@ -15,10 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface ExamService {
-    /**
-     * 获取所有的问题列表
-     */
-    List<QuestionVo> getQuestionAll();
+
+    List<QuestionVo> getQuestionAll(String userId);
 
     /**
      * 根据前端传过来的问题实体更新问题和选项
@@ -52,7 +50,7 @@ public interface ExamService {
     /**
      * 获取全部考试的列表
      */
-    List<ExamVo> getExamAll();
+    List<ExamVo> getExamByCreatorId(String creatorId);
 
     /**
      * 获取所有问题的下拉列表，方便前端创建考试时筛选

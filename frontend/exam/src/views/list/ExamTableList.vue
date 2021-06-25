@@ -117,7 +117,7 @@ export default {
     }
   },
   mounted () {
-    this.loadAll() // 加载所有问题的数据
+    this.loadAll(this.$store.getters.userInfo.id) // 加载所有问题的数据
   },
   methods: {
     handleEdit (record) {
@@ -147,9 +147,9 @@ export default {
     handleOk () {
       this.loadAll()
     },
-    loadAll () {
+    loadAll (userId) {
       const that = this
-      getExamAll()
+      getExamAll(userId)
         .then(res => {
           if (res.code === 0) {
             that.tableData = res.data

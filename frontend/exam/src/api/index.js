@@ -15,12 +15,12 @@ const api = {
 
   // 考试的接口
   ExamQuestionList: '/exam/question/list',
-  ExamQuestionAll: '/exam/question/all',
+  ExamQuestionAll: '/exam/question/all/',
   ExamQuestionUpdate: '/exam/question/update',
   ExamQuestionSelection: '/exam/question/selection',
   ExamQuestionCreate: '/exam/question/create',
   ExamList: '/exam/list',
-  ExamAll: '/exam/all',
+  ExamAll: '/exam/all/',
   // 获取问题列表，按照单选、多选和判断进行分类
   ExamQuestionTypeList: '/exam/question/type/list',
   ExamCreate: '/exam/create',

@@ -54,8 +54,8 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public List<QuestionVo> getQuestionAll() {
-        List<Question> questionList = questionRepository.findAll();
+    public List<QuestionVo> getQuestionAll(String userId) {
+        List<Question> questionList = questionRepository.findByUserId(userId);
         return getQuestionVos(questionList);
     }
 
@@ -271,8 +271,8 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public List<ExamVo> getExamAll() {
-        List<Exam> examList = examRepository.findAll();
+    public List<ExamVo> getExamByCreatorId(String creatorId) {
+        List<Exam> examList = examRepository.findByCreatorId(creatorId);
         return getExamVos(examList);
     }
 

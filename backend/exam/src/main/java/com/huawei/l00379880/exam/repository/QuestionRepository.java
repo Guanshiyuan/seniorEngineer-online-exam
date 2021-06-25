@@ -14,6 +14,15 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, String> {
     List<Question> findByQuestionTypeId(Integer id);
+
     @Query("select q from Question q order by q.updateTime desc")
     List<Question> findAll();
+
+    /**
+     * 根据创建者id查找对应的问题
+     * @param userId creator id
+     * @return 问题列表
+     */
+    @Query("select q from Question q where q.questionCreatorId = ?1")
+    List<Question> findByUserId(String userId);
 }

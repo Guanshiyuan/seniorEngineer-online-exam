@@ -27,12 +27,14 @@ public class ExamController {
     @Autowired
     private ExamService examService;
 
-    @GetMapping("/question/all")
-    @ApiOperation("获取所有问题的列表")
-    ResultVO<List<QuestionVo>> getQuestionAll() {
+    @GetMapping("/question/all/{id}")
+    @ApiOperation("获取当前用户的所有问题的列表")
+    ResultVO<List<QuestionVo>> getQuestionAll(@PathVariable String id) {
+        System.out.println("creator id: " + id);
+
         ResultVO<List<QuestionVo>> resultVO;
         try {
-            List<QuestionVo> questionAll = examService.getQuestionAll();
+            List<QuestionVo> questionAll = examService.getQuestionAll(id);
             resultVO = new ResultVO<>(0, "获取全部问题列表成功", questionAll);
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,13 +103,14 @@ public class ExamController {
         return resultVO;
     }
 
-    @GetMapping("/all")
-    @ApiOperation("获取全部考试的列表")
-    ResultVO<List<ExamVo>> getExamAll() {
+    @GetMapping("/all/{creatorId}")
+    @ApiOperation("获取当前用户创建的全部考试的列表")
+    ResultVO<List<ExamVo>> getExamAll(@PathVariable String creatorId) {
         // 需要拼接前端需要的考试列表对象
         ResultVO<List<ExamVo>> resultVO;
+
         try {
-            List<ExamVo> examVos = examService.getExamAll();
+            List<ExamVo> examVos = examService.getExamByCreatorId(creatorId);
             resultVO = new ResultVO<>(0, "获取全部考试的列表成功", examVos);
         } catch (Exception e) {
             e.printStackTrace();

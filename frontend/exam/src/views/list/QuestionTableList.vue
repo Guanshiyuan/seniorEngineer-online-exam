@@ -240,6 +240,14 @@ export default {
     }
   },
   mounted () {
+    this.$store
+      .dispatch('GetInfo') // 登陆后访问除登录以外的任何一个页面都会先调用GetInfo方法，看看用户的权限是否有资格访问
+      .then(res => {
+        console.log('hhhhhhhhhhhhhhhhhhh')
+        console.log(res)
+      }).catch(err => {
+        console.log(err.message)
+      })
     this.loadAll() // 加载所有问题的数据
   },
   methods: {

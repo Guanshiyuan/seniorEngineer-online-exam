@@ -15,4 +15,14 @@ import java.util.List;
 public interface ExamRepository extends JpaRepository<Exam, String> {
     @Query("select e from Exam e order by e.updateTime desc")
     List<Exam> findAll();
+
+    /**
+     *
+     * 根据考试创建者id查找考试，并显示
+     * @param creatorId 创建者id
+     * @author Lil duan
+     * @return 查询结果
+     */
+    @Query("select e from Exam e where e.examCreatorId=?1")
+    List<Exam> findByCreatorId(String creatorId);
 }

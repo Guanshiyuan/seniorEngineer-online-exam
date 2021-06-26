@@ -236,11 +236,12 @@ export default {
         // onClickRow: that.clickRow,
         // onClickCell: that.clickCell // 单元格单击事件
         onDblClickCell: that.dblClickCell // 单元格双击事件
-      }
+      },
+      userId: ''
     }
   },
   mounted () {
-    this.loadAll() // 加载所有问题的数据
+    this.loadAll(this.$store.getters.userInfo.id) // 加载所有问题的数据
   },
   methods: {
     handleEdit (record) {
@@ -336,18 +337,9 @@ export default {
         })
       }
     },
-    loadAll () {
+    loadAll (userId) {
       const that = this
-      this.$store
-        .dispatch('GetInfo') // 登陆后访问除登录以外的任何一个页面都会先调用GetInfo方法，看看用户的权限是否有资格访问
-        .then(res => {
-          console.log('hhhhhhhhhhhhhhhhhhh')
-          console.log(res)
-          console.log(res.data.id)
-        }).catch(err => {
-          console.log(err.message)
-        })
-      getQuestionAll()
+      getQuestionAll(userId)
         .then(res => {
           if (res.code === 0) {
             that.tableData = res.data

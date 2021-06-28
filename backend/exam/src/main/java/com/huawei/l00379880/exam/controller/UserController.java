@@ -6,6 +6,7 @@
  ***********************************************************/
 package com.huawei.l00379880.exam.controller;
 
+import com.huawei.l00379880.exam.dto.ForgetDTO;
 import com.huawei.l00379880.exam.dto.RegisterDTO;
 import com.huawei.l00379880.exam.entity.User;
 import com.huawei.l00379880.exam.enums.ResultEnum;
@@ -42,6 +43,24 @@ public class UserController {
             resultVO = new ResultVO<>(ResultEnum.REGISTER_FAILED.getCode(), ResultEnum.REGISTER_FAILED.getMessage(), null);
         }
         return resultVO;
+    }
+
+    @PostMapping("/forgetPassword")
+    @ApiOperation("注册")
+    ResultVO<User> forgetPassword(@RequestBody ForgetDTO forgetDTO) {
+        ResultVO<User> resultVO;
+        // 注册信息的完善，还有唯一性校验没(用户名、邮箱和手机号)已经在user表中通过unique来设置了
+        System.out.println("一天又一天");
+        System.out.println(forgetDTO.toString());
+        User user = userService.forgetPassword(forgetDTO);
+        if (user != null) {
+            // 注册成功
+            resultVO = new ResultVO<>(ResultEnum.REGISTER_SUCCESS.getCode(), ResultEnum.REGISTER_SUCCESS.getMessage(), user);
+        } else {
+            resultVO = new ResultVO<>(ResultEnum.REGISTER_FAILED.getCode(), ResultEnum.REGISTER_FAILED.getMessage(), null);
+        }
+        return resultVO;
+
     }
 
     @PostMapping("/login")

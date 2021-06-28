@@ -6,11 +6,15 @@
  ***********************************************************/
 package com.huawei.l00379880.exam.service;
 
+import com.huawei.l00379880.exam.dto.ForgetDTO;
 import com.huawei.l00379880.exam.dto.RegisterDTO;
+import com.huawei.l00379880.exam.dto.ResetDTO;
 import com.huawei.l00379880.exam.entity.User;
 import com.huawei.l00379880.exam.qo.LoginQo;
 import com.huawei.l00379880.exam.vo.UserInfoVo;
 import com.huawei.l00379880.exam.vo.UserVo;
+
+import javax.servlet.http.HttpServletRequest;
 
 public interface UserService {
     /**
@@ -20,6 +24,22 @@ public interface UserService {
      * @return 注册成功后的用户信息
      */
     User register(RegisterDTO registerDTO);
+
+    /**
+     * 忘记密码
+     *
+     * @param
+     * @return
+     */
+    User forgetPassword(ForgetDTO forgetDTO);
+
+    /**
+     * 重置密码
+     *
+     * @param
+     * @return
+     */
+    User resetPassword(ResetDTO resetDTODTO);
 
     /**
      * 登录接口，登录成功返回token

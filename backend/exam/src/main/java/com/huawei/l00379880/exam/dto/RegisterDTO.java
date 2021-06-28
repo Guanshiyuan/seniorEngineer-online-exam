@@ -16,6 +16,8 @@ public class RegisterDTO {
     private String password;
     private String password2;
     private String mobile;
+    private String valiQuestion;
+    private String valiQuestionAnswer;
     /**
      * 验证码
      */

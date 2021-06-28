@@ -18,3 +18,19 @@ export function register (parameter) {
     data: parameter
   })
 }
+
+export function forgetPassword (parameter) {
+  return axios({
+    url: api.ForgetPassword,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function resetPassword (parameter) {
+  return axios({
+    url: api.ResetPassword,
+    method: 'post',
+    data: parameter
+  })
+}

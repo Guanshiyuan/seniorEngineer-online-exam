@@ -11,9 +11,9 @@ export function getQuestionList (parameter) {
   })
 }
 
-export function getQuestionAll (id) {
+export function getQuestionAll () {
   return axios({
-    url: api.ExamQuestionAll + id,
+    url: api.ExamQuestionAll,
     method: 'get'
   })
 }
@@ -54,9 +54,9 @@ export function getExamList (parameter) {
   })
 }
 
-export function getExamAll (id) {
+export function getExamAll () {
   return axios({
-    url: api.ExamAll + id,
+    url: api.ExamAll,
     method: 'get'
   })
 }

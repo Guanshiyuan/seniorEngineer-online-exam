@@ -8,9 +8,10 @@
               size="large"
               type="text"
               placeholder="昵称"
-              v-decorator="['nickname', {rules: [{ required: true, message: '请输入昵称' }], validateTrigger: ['change', 'blur']}]"
+                        v-decorator="['nickname', {rules: [{ required: true, message: '请输入昵称' }], validateTrigger: ['change', 'blur']}]"
             ></a-input>
       </a-form-item>
+    
       <a-form-item>
         <a-input
           size="large"
@@ -19,6 +20,7 @@
           v-decorator="['email', {rules: [{ required: true, type: 'email', message: '请输入邮箱地址' }], validateTrigger: ['change', 'blur']}]"
         ></a-input>
       </a-form-item>
+      
       <a-form-item>
               <template>
                 <a-radio-group
@@ -67,7 +69,41 @@
           v-decorator="['password2', {rules: [{ required: true, message: '至少6位密码，区分大小写' }, { validator: this.handlePasswordCheck }], validateTrigger: ['change', 'blur']}]"
         ></a-input>
       </a-form-item>
-
+      
+      <a-form-item style=" margin-bottom:5px ">
+        <template>
+          <div>
+            <a-select style="width: 300px" @change="handleChange"   v-decorator="['valiQuestion', { validateTrigger: ['change', 'blur']}]">
+              <a-select-option value="请选择验证问题" disabled>
+                请选择验证问题
+              </a-select-option>              
+              <a-select-option value="你父亲的名字是什么？">
+                你父亲的名字是什么？
+              </a-select-option>
+              <a-select-option value="你母亲的名字是什么？">
+                你母亲的名字是什么？
+              </a-select-option>
+              <a-select-option value="对你影响最深的人是谁？">
+                对你影响最深的人是谁
+              </a-select-option>
+              <a-select-option value="你小学的名字是什么？">
+                你小学的名字是什么？
+              </a-select-option>
+            </a-select>
+          </div>
+        </template>
+      </a-form-item>
+      
+      <a-form-item>
+            <a-input
+              size="large"
+              type="text"
+              placeholder="请输入你的回答"
+              v-decorator="['valiQuestionAnswer', {rules: [{ required: true, message: '请输入你的回答' }], validateTrigger: ['change', 'blur']}]"
+            ></a-input>
+      </a-form-item>      
+      
+      
       <a-form-item>
         <a-input
           size="large"

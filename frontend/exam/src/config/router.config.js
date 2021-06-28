@@ -154,6 +154,16 @@ export const constantRouterMap = [
         name: 'login',
         component: () => import(/* webpackChunkName: "user" */ '../views/user/Login')
       },
+	  {
+	    path: 'forgetPassword',
+	    name: 'forgetPassword',
+	    component: () => import(/* webpackChunkName: "user" */ '../views/user/ForgetPassword')
+	  },
+	  {
+	    path: 'resetPassword',
+	    name: 'resetPassword',
+	    component: () => import(/* webpackChunkName: "user" */ '../views/user/ResetPassword')
+	  },
       {
         path: 'register',
         name: 'register',

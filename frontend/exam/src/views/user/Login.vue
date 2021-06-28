@@ -46,6 +46,7 @@
 
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe']">自动登录</a-checkbox>
+		<router-link class="forgetPassword" :to="{ name: 'forgetPassword' }" style="float: right;">忘记密码</router-link>
         <router-link class="register" :to="{ name: 'register' }" style="float: right;">注册账户</router-link>
       </a-form-item>
 

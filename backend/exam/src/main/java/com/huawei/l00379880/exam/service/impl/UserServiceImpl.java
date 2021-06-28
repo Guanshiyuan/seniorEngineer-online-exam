@@ -8,7 +8,9 @@ package com.huawei.l00379880.exam.service.impl;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.IdUtil;
+import com.huawei.l00379880.exam.dto.ForgetDTO;
 import com.huawei.l00379880.exam.dto.RegisterDTO;
+import com.huawei.l00379880.exam.dto.ResetDTO;
 import com.huawei.l00379880.exam.entity.Action;
 import com.huawei.l00379880.exam.entity.Page;
 import com.huawei.l00379880.exam.entity.Role;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +69,7 @@ public class UserServiceImpl implements UserService {
             user.setUserNickname(registerDTO.getNickname());
             // 这里还需要进行加密处理，后续解密用Base64.decode()
             user.setUserPassword(Base64.encode(registerDTO.getPassword()));
-            // 默认设置为学生身份，需要老师和学生身份地话需要管理员修改
+            // 根据用户的选择为用户分配身份
             String roleId = registerDTO.getRoleId(); 
             if(roleId.equals("1")){
                 user.setUserRoleId(RoleEnum.STUDENT.getId()); 
@@ -81,6 +84,9 @@ public class UserServiceImpl implements UserService {
             user.setUserEmail(registerDTO.getEmail());
             // 需要验证手机号是否已经存在：数据字段已经设置unique了，失败会异常地
             user.setUserPhone(registerDTO.getMobile());
+            // 设置用户密保问题及答案
+            user.setValiQuestion(registerDTO.getValiQuestion());
+            user.setValiQuestionAnswer(registerDTO.getValiQuestionAnswer());
             userRepository.save(user);
             System.out.println(user);
             return user;
@@ -89,6 +95,22 @@ public class UserServiceImpl implements UserService {
             // 出异常，返回null，表示注册失败
             return null;
         }
+    }
+
+    @Override
+    public User forgetPassword(ForgetDTO forgetDTO) {
+        User user;
+        String userEmail = forgetDTO.getUserEmail();
+        user = userRepository.findByUserEmail(userEmail);
+        return user;
+    }
+
+    @Override
+    public User resetPassword(ResetDTO resetDTO) {
+        User user;
+        String userEmail = resetDTO.getUserEmail();
+        user = userRepository.findByUserEmail(userEmail);
+        return user;
     }
 
     @Override

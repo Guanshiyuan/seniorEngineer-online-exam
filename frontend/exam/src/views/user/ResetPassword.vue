@@ -1,113 +1,178 @@
 <template>
-  <div class="main">
-    <a-form
-      id="formLogin"
-      class="user-layout-login"
-      ref="formLogin"
-      :form="form"
-      @submit="handleSubmit"
-    >
-      <a-tabs
-        :activeKey="customActiveKey"
-        :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
-        @change="handleTabClick"
-      >
-        <a-tab-pane key="tab1" tab="在线考试系统重置密码">
-          <a-form-item>
-            <a-input
-              size="large"
-              type="text"
-              placeholder="请输入邮箱"
-              v-decorator="[
-                'userEmail',
-                {rules: [{ required: true, message: '请输入邮箱' }], validateTrigger: 'change'}
-              ]"
-            >
-              <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-item>
+  <div class="main user-layout-register">
+    <h3><span>重置密码</span></h3>
+    <a-form ref="formRegister" :form="form" id="formRegister">
 
-        </a-tab-pane>
-      </a-tabs>
+      <a-popover placement="rightTop" trigger="click" :visible="state.passwordLevelChecked">
+        <template slot="content">
+          <div :style="{ width: '240px' }">
+            <div :class="['user-register', passwordLevelClass]">强度：<span>{{ passwordLevelName }}</span></div>
+            <a-progress :percent="state.percent" :showInfo="false" :strokeColor=" passwordLevelColor "/>
+            <div style="margin-top: 10px;">
+              <span>请至少输入 6 个字符。请不要使用容易被猜到的密码。</span>
+            </div>
+          </div>
+        </template>
+        <a-form-item>
+          <a-input
+            size="large"
+            type="password"
+            @click="handlePasswordInputClick"
+            autocomplete="false"
+            placeholder="至少6位密码，区分大小写"
+            v-decorator="['password', {rules: [{ required: true, message: '至少6位密码，区分大小写'}, { validator: this.handlePasswordLevel }], validateTrigger: ['change', 'blur']}]"
+          ></a-input>
+        </a-form-item>
+      </a-popover>
 
-		<a-form-item style="margin-top:24px">
-			<a-button
-			  size="large"
-			  type="primary"
-			  htmlType="submit"
-			  class="login-button"
-			  :loading="state.loginBtn"
-			  :disabled="state.loginBtn"
-			  @click.stop.prevent="handleSubmit"
-			>确定
-			</a-button>
-		</a-form-item>
+      <a-form-item>
+        <a-input
+          size="large"
+          type="password"
+          autocomplete="false"
+          placeholder="确认密码"
+          v-decorator="['password2', {rules: [{ required: true, message: '至少6位密码，区分大小写' }, { validator: this.handlePasswordCheck }], validateTrigger: ['change', 'blur']}]"
+        ></a-input>
+      </a-form-item>
+	  
+      <a-form-item>
+        <a-button
+          size="large"
+          type="primary"
+          htmlType="submit"
+          class="register-button"
+          :loading="registerBtn"
+          @click.stop.prevent="handleSubmit"
+          :disabled="registerBtn">重置密码
+        </a-button>
+      </a-form-item>
+
     </a-form>
-
-    <two-step-captcha
-      v-if="requiredTwoStepCaptcha"
-      :visible="stepCaptchaVisible"
-      @success="stepCaptchaSuccess"
-      @cancel="stepCaptchaCancel"
-    ></two-step-captcha>
   </div>
 </template>
 
 <script>
-import TwoStepCaptcha from '../../components/tools/TwoStepCaptcha'
-import { mapActions } from 'vuex'
-import { timeFix } from '../../utils/util'
-import { getSmsCaptcha, get2step } from '../../api/login'
-import { forgetPassword } from '../../api/user'
+import { mixinDevice } from '../../utils/mixin.js'
+import { getSmsCaptcha } from '../../api/login'
+import { register } from '../../api/user'
 
+const levelNames = {
+  0: '低',
+  1: '低',
+  2: '中',
+  3: '强'
+}
+const levelClass = {
+  0: 'error',
+  1: 'error',
+  2: 'warning',
+  3: 'success'
+}
+const levelColor = {
+  0: '#ff0000',
+  1: '#ff0000',
+  2: '#ff7e05',
+  3: '#52c41a'
+}
 export default {
-  components: {
-    TwoStepCaptcha
-  },
+  name: 'Register',
+  components: {},
+  mixins: [mixinDevice],
   data () {
     return {
-      customActiveKey: 'tab1',
-      loginBtn: false,
-      // login type: 0 email, 1 username, 2 telephone
-      loginType: 0,
-      requiredTwoStepCaptcha: false,
-      stepCaptchaVisible: false,
       form: this.$form.createForm(this),
+
       state: {
         time: 60,
-        loginBtn: false,
-        // login type: 0 email, 1 username, 2 telephone
-        loginType: 0,
-        smsSendBtn: false
-      }
+        smsSendBtn: false,
+        passwordLevel: 0,
+        passwordLevelChecked: false,
+        percent: 10,
+        progressColor: '#FF0000'
+      },
+      registerBtn: false
     }
   },
-  created () {
-    get2step({})
-      .then(res => {
-        this.requiredTwoStepCaptcha = res.result.stepCode
-      })
-      .catch(() => {
-        this.requiredTwoStepCaptcha = false
-      })
-    // this.requiredTwoStepCaptcha = true
+  computed: {
+    passwordLevelClass () {
+      return levelClass[this.state.passwordLevel]
+    },
+    passwordLevelName () {
+      return levelNames[this.state.passwordLevel]
+    },
+    passwordLevelColor () {
+      return levelColor[this.state.passwordLevel]
+    }
   },
   methods: {
-    ...mapActions(['Login', 'Logout']), // 这个是从Vuex中直接继承过来，从而可以当本地方法用，见store/modules/user.js
-    // handler
-    handleTabClick (key) {
-      this.customActiveKey = key
-      // this.form.resetFields()
+
+    handlePasswordLevel (rule, value, callback) {
+      let level = 0
+
+      // 判断这个字符串中有没有数字
+      if (/[0-9]/.test(value)) {
+        level++
+      }
+      // 判断字符串中有没有字母
+      if (/[a-zA-Z]/.test(value)) {
+        level++
+      }
+      // 判断字符串中有没有特殊符号
+      if (/[^0-9a-zA-Z_]/.test(value)) {
+        level++
+      }
+      this.state.passwordLevel = level
+      this.state.percent = level * 30
+      if (level >= 2) {
+        if (level >= 3) {
+          this.state.percent = 100
+        }
+        callback()
+      } else {
+        if (level === 0) {
+          this.state.percent = 10
+        }
+        callback(new Error('密码强度不够'))
+      }
     },
-    handleSubmit (e) {
+
+    handlePasswordCheck (rule, value, callback) {
+      const password = this.form.getFieldValue('password')
+      console.log('value', value)
+      if (value === undefined) {
+        callback(new Error('请输入密码'))
+      }
+      if (value && password && value.trim() !== password.trim()) {
+        callback(new Error('两次密码不一致'))
+      }
+      callback()
+    },
+
+    handlePhoneCheck (rule, value, callback) {
+      console.log('handlePhoneCheck, rule:', rule)
+      console.log('handlePhoneCheck, value', value)
+      console.log('handlePhoneCheck, callback', callback)
+
+      callback()
+    },
+
+    handlePasswordInputClick () {
+      if (!this.isMobile()) {
+        this.state.passwordLevelChecked = true
+        return
+      }
+      this.state.passwordLevelChecked = false
+    },
+
+    handleSubmit () {
       const { form: { validateFields }, $router, $message } = this
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           // 在这里进行Rest请求，params参数如右：{email: "1648266192@qq.com", password: "123456", password2: "123456", mobile: "17601324488", captcha: "69076"}
-          forgetPassword(values).then(res => {
+          register(values).then(res => {
             // 成功就跳转到结果页面
             console.log(res)
-            $router.push({ name: 'registerResult', params: { ...values } })
+            $router.push({ name: 'login', params: { ...values } })
           }).catch(err => {
             // 失败就弹出警告消息
             $message.error(`load user err: ${err.message}`)
@@ -115,75 +180,89 @@ export default {
         }
       })
     },
+
     getCaptcha (e) {
       e.preventDefault()
-      const { form: { validateFields }, state } = this
+      const { form: { validateFields }, state, $message, $notification } = this
 
-      validateFields(['mobile'], { force: true }, (err, values) => {
-        if (!err) {
-          state.smsSendBtn = true
+      validateFields(['mobile'], { force: true },
+        (err, values) => {
+          if (!err) {
+            state.smsSendBtn = true
 
-          const interval = window.setInterval(() => {
-            if (state.time-- <= 0) {
+            const interval = window.setInterval(() => {
+              if (state.time-- <= 0) {
+                state.time = 60
+                state.smsSendBtn = false
+                window.clearInterval(interval)
+              }
+            }, 1000)
+
+            const hide = $message.loading('验证码发送中..', 0)
+
+            getSmsCaptcha({ mobile: values.mobile }).then(res => {
+              setTimeout(hide, 2500)
+              $notification['success']({
+                message: '提示',
+                description: '验证码获取成功，您的验证码为：' + res.result.captcha,
+                duration: 8
+              })
+            }).catch(err => {
+              setTimeout(hide, 1)
+              clearInterval(interval)
               state.time = 60
               state.smsSendBtn = false
-              window.clearInterval(interval)
-            }
-          }, 1000)
-
-          const hide = this.$message.loading('验证码发送中..', 0)
-          getSmsCaptcha({ mobile: values.mobile }).then(res => {
-            setTimeout(hide, 2500)
-            this.$notification['success']({
-              message: '提示',
-              description: '验证码获取成功，您的验证码为：' + res.result.captcha,
-              duration: 8
+              this.requestFailed(err)
             })
-          }).catch(err => {
-            setTimeout(hide, 1)
-            clearInterval(interval)
-            state.time = 60
-            state.smsSendBtn = false
-            this.requestFailed(err)
-          })
+          }
         }
-      })
-    },
-    stepCaptchaSuccess () {
-      this.loginSuccess()
-    },
-    stepCaptchaCancel () {
-      this.Logout().then(() => {
-        this.loginBtn = false
-        this.stepCaptchaVisible = false
-      })
-    },
-    loginSuccess (res) {
-      console.log(res)
-      this.$router.push({ name: 'dashboard' })
-      // 延迟 1 秒显示欢迎信息
-      setTimeout(() => {
-        this.$notification.success({
-          message: '欢迎',
-          description: `${timeFix()}，欢迎回来`
-        })
-      }, 1000)
+      )
     },
     requestFailed (err) {
       this.$notification['error']({
         message: '错误',
-        description: ((err.response || {}).data || {}).message || '用户名或密码错误',
+        description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
         duration: 4
       })
+      this.registerBtn = false
+    }
+  },
+  watch: {
+    'state.passwordLevel' (val) {
+      console.log(val)
     }
   }
 }
 </script>
+<style lang="less">
+  .user-register {
 
+    &.error {
+      color: #ff0000;
+    }
+
+    &.warning {
+      color: #ff7e05;
+    }
+
+    &.success {
+      color: #52c41a;
+    }
+
+  }
+
+  .user-layout-register {
+    .ant-input-group-addon:first-child {
+      background-color: #fff;
+    }
+  }
+</style>
 <style lang="less" scoped>
-  .user-layout-login {
-    label {
-      font-size: 14px;
+  .user-layout-register {
+
+    & > h3 {
+      font-size: 16px;
+      margin-bottom: 20px;
     }
 
     .getCaptcha {
@@ -192,38 +271,13 @@ export default {
       height: 40px;
     }
 
-    .forge-password {
-      font-size: 14px;
+    .register-button {
+      width: 50%;
     }
 
-    button.login-button {
-      padding: 0 15px;
-      font-size: 16px;
-      height: 40px;
-      width: 100%;
-    }
-
-    .user-login-other {
-      text-align: left;
-      margin-top: 24px;
-      line-height: 22px;
-
-      .item-icon { 
-        font-size: 24px;
-        color: rgba(0, 0, 0, 0.2);
-        margin-left: 16px;
-        vertical-align: middle;
-        cursor: pointer;
-        transition: color 0.3s;
-
-        &:hover {
-          color: #1890ff;
-        }
-      }
-
-      .register {
-        float: right;
-      }
+    .login {
+      float: right;
+      line-height: 40px;
     }
   }
 </style>
